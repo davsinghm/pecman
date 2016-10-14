@@ -1,0 +1,106 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainFragment"
+    android:background="@drawable/purple2"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_main_frag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="3dp"
+        android:titleTextColor="#fff"
+        android:subtitleTextColor="#fff"
+        android:background="@color/background_2">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+           <com.pkmmte.view.CircularImageView
+               android:id="@+id/circlepro"
+               android:layout_width="40dp"
+               android:layout_height="40dp"
+               android:layout_centerVertical="true"
+               />
+
+            <TextView
+                android:id="@+id/user"
+                android:layout_toRightOf="@+id/circlepro"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:textSize="20dp"
+                android:textColor="#FFFFFF"
+                android:text="Name"
+                />
+
+            <TextView
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text=""
+                android:layout_marginRight="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignBaseline="@+id/user"
+                android:textColor="#FFFFFF"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/message_input"
+            android:layout_width="0dp"
+            android:textColor="#000000"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/prompt_message"
+            android:layout_marginLeft="5dp"
+            android:background="@null"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeActionId="@+id/send"
+            android:imeActionLabel="@string/action_send"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/send_button"
+            android:layout_width="60dp"
+            android:text="SEND"
+            android:textAlignment="center"
+            android:textColor="@color/background"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/action_send"
+            android:background="@color/background_2"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

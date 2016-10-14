@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta name="viewport" content="width=1200, user-scalable=no">
+        <meta charset='utf-8'>
+        <title>Pacman vs. Pacman</title>
+        <link rel='stylesheet' href='/stylesheets/style2.css' />
+        <script src="jquery.min.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <div id='info'>
+            <h1 class='yellow'>Pacman vs. Pacman</h1>
+            <h2 class='score'></h2>
+        </div>
+        <div id='container'></div>
+        <div id='coins'></div>
+        <div id='hero'></div>
+        <div id='enemy'></div>
+        <div id='start'><button class='start'>Waiting for Player 2</button></div>
+        <div id='end'></div>
+        <div id='controls'>
+            <div id='instructions'>CAN ALSO USE KEYPAD TO CONTROL PACMAN</div>
+            <div id='up'><p class='icon'>UP</p></div>
+            <div id='left'><p class='icon'>LEFT</p></div>
+            <div id='right'><p class='icon'>RIGHT</p></div>
+            <div id='down'><p class='icon'>DOWN</p></div>
+        </div>
+    </body>
+</html>
+<script type="text/javascript">
+    var socket = io.connect();
+    var name = prompt('Welcome! Please enter your name.');
+    var game = new Game();
+    var players = new Players();
+    var player_array = [];
+    var sound = {};
+    var upPac;
+    var mainTime;
+    var myID;
+if (window.DeviceOrientationEvent) {
+
+        window.addEventListener("deviceorientation", function(event) {
+              // prompt("beta"+Math.round(event.beta));
+              // prompt("alpha"+Math.round(event.alpha));
+              // prompt("gamma"+Math.round(event.gamma));
+              // var intensity = 35;
+              var  up  =38;
+              var  down = 40;
+              var  right  =39;
+              var  left = 37;
+              if (Math.round(event.gamma)>= 30 && Math.round(event.beta)<=35) {
+                pacman.info.pos_temp = right;
+
+              }else if (Math.round(event.gamma)<= -25  && Math.round(event.beta)<=35) {
+                pacman.info.pos_temp = left;
+
+              }else if (Math.round(event.beta)>=35) {
+                            pacman.info.pos_temp = down;
+
+              }else if (Math.round(event.beta)<= -10) {
+                            pacman.info.pos_temp = up;
+              }
+            player_array[myID].detectCollision();
+
+                // when beta > +40 
+                // when gamma <30
+
+                // document.getElementById("y").style.webkitTransform = "scaleY("+(Math.round(event.beta))+")";  
+                // document.getElementById("x").style.webkitTransform = "scaleX("+(Math.round(event.gamma))+")";
+                // document.getElementById("angle").style.webkitTransform = "rotateZ("+(Math.round(event.alpha))+"deg)";  
+            }, true);
+
+
+
+    } else {  
+        prompt("Sorry, your browser doesn't support Device Orientation");
+    }
+    var mainLoop = function() {
+        players.loop(myID);
+    }
+
+    var timeLoop = function() {
+        game.timer();
+    }
+
+    sound.start = new Audio('sounds/pacman_beginning.wav');
+    sound.background1 = new Audio('sounds/pacman_background.wav');
+    sound.eat = new Audio('sounds/pacman_chomp.wav');
+    sound.power = new Audio('sounds/pacman_eatghost.wav')
+    sound.die = new Audio('sounds/pacman_death.wav');
+    sound.end = new Audio('sounds/pacman_intermission.wav')
+    
+    socket.emit('login', { name: name });
+    
+    socket.on('current_user', function (data) {
+        players.createNew(data.name, data.info.x, data.info.y, data.info.pos, data.info.id);
+        myID = data.info.id;
+        game.map = data.map;
+        game.coins = data.coins;
+        game.drawMap();
+        game.drawCoins();
+    })
+
+    socket.on('other_users', function (data) {
+        console.log(data);
+        for (var id in data.users) {
+            var info = data.users[id].info;
+            players.createNew(data.users[id].name, info.x, info.y, info.pos, id);
+        }
+    })
+
+    socket.on('new_user', function (data) {
+        console.log(data.user.name);
+        players.createNew(data.user.name, data.user.info.x, data.user.info.y, data.user.info.pos, data.user.info.id);
+    })
+
+    socket.on('remove_user', function (remove_user) {
+        document.getElementById(remove_user.id).remove();
+    })
+
+    socket.on('start_game', function (data) {
+        document.getElementById('start').innerHTML = '';
+        sound.start.play();
+        mainTime = setInterval(timeLoop, 1000);
+    })
+
+    document.onkeydown = function (e) {
+        if (e.keyCode >= 37 && e.keyCode <= 40) {
+            player_array[myID].info.pos_temp = e.keyCode;
+            player_array[myID].detectCollision();
+        }
+    }
+
+    // Option to control Pacman by clicking button (to use on phone or tablet)
+    $('#left').click(function(){
+        player_array[myID].info.pos_temp = 37;
+        player_array[myID].detectCollision();
+        console.log('left');
+    })
+
+    $('#up').click(function(){
+        player_array[myID].info.pos_temp = 38;
+        player_array[myID].detectCollision();
+    })
+
+    $('#right').click(function(){
+        player_array[myID].info.pos_temp = 39;
+        player_array[myID].detectCollision();
+    })
+
+    $('#down').click(function(){
+        player_array[myID].info.pos_temp = 40;
+        player_array[myID].detectCollision();
+    })
+
+    function Players() {
+        this.loop = function(myID) {
+            player_array[myID].update();
+        }
+
+        this.createNew= function (name, x, y, pos, id) {
+            var pacman = new Pacman(name, x, y, pos, id);
+            player_array[id] = pacman;
+        }
+    }
+
+    function Game() {
+        this.info = { tile: 10, conv: 3, timeElapsed: 0 };
+        this.coins = [];
+        this.map = [];
+
+        this.drawMap = function() {
+            for (var i=0; i<this.map.length; i++) {
+                for (var j=0; j<this.map[i].length; j++) {
+                    if (this.map[i][j] === 1 || this.map[i][j] === 9) {
+                        $('#container').append("<div class='path'></div>");
+                    }
+                    else if (this.map[i][j] === 2) {
+                        $('#container').append("<div class='door'></div>")
+                    }
+                    else if (this.map[i][j] === 0) {
+                        $('#container').append("<div class='brick'></div>");
+                    }
+                }
+            }
+        }
+
+        this.drawCoins = function() {
+            for (var i in this.coins) {
+                $('#coins').append("<img id='" + this.coins[i].id + "' class='coin' src='images/coin.jpg' " +
+                            "style='top: " + this.coins[i].y + "px; left: " + this.coins[i].x + "px;'>");
+            }
+
+            $("img[id='300-210']").replaceWith("<img id='300-210' class='power'" +
+                "src='images/powerpellet.gif' style='top: 300px; left: 210px;'>");
+            $("img[id='300-360']").replaceWith("<img id='300-360' class='power'" +
+                "src='images/powerpellet.gif' style='top: 300px; left: 360px;'>");
+            $("img[id='300-630']").replaceWith("<img id='300-630' class='power'" +
+                "src='images/powerpellet.gif' style='top: 300px; left: 630px;'>");
+            $("img[id='300-690']").replaceWith("<img id='300-690' class='power'" +
+                "src='images/powerpellet.gif' style='top: 300px; left: 690px;'>");
+            $("img[id='300-840']").replaceWith("<img id='300-840' class='power'" +
+                "src='images/powerpellet.gif' style='top: 300px; left: 840px;'>");                     
+        }
+
+        this.timer = function() {
+            this.info.timeElapsed++;
+            if (this.info.timeElapsed ===4) {
+                upPac = setInterval(mainLoop, 30);
+                // sound.background1.loop = true;
+                // sound.background1.play();
+            }
+        }
+     }
+
+    function Pacman (name, x, y, pos, id) {
+        var that = this;
+        this.info = { name: name, x: x, y: y, pos: pos, pos_temp: pos, id: id, collision: false, power: false, score: 0 };
+
+        this.initialize = function() {
+            $('#hero').append("<div id='" + this.info.id + "'><img class='pacman' src='images/pacman" + this.info.pos +
+                ".gif' style='top: " + this.info.y + "px; left: " + this.info.x + "px;'></div>");
+        }
+        
+        this.draw = function (data) {
+            var el = document.getElementById(data.info.id);
+            el.innerHTML = "<img class='pacman' src='images/pacman" + data.info.pos +
+              ".gif' style='top: " + data.info.y + "px; left: " + data.info.x + "px;'>";
+        }
+
+        this.updateScore = function (player_id, player_score) {
+            var score = '';
+            score = this.info.name + ": " + this.info.score;
+            player_array[player_id].info.score = player_score;
+            for (var id in player_array) {
+                if (player_array[id].info.id !== this.info.id) {
+                    score += " | " + player_array[id].info.name + ": " + player_array[id].info.score;
+                }
+            }
+            document.getElementById('info').children[1].innerHTML = score;
+        }
+
+        this.update = function() {
+            // This means that you are updating YOUR movement
+            this.detectCollision();
+            this.move();
+            this.draw(that);
+            this.updateCoins();
+            socket.emit('key_press', { info: this.info });
+             
+            // This means you are updating another players movement
+            socket.on('new_movement', function (data) {
+                that.draw(data);
+            })
+
+            socket.on('remove_coin', function (data) {
+                $("#" + data.coin_id).remove();
+            })
+
+            socket.on('update_all_coins', function (data) {
+                game.coins = data.coins;
+                if (game.coins.length === 0){
+                    var winner = 0;
+                    var winner_id;
+                    for (var id in player_array) {
+                        if (player_array[id].info.score > winner) {
+                            winner = player_array[id].info.score;
+                            winner_id = id;
+                        }
+                    }
+                    sound.end.play();
+                    clearInterval(upPac);
+                    if (winner_id === myID) {
+                        $('#end').html("<p id='winner'>You win!</p>");
+                    }
+                    else {
+                        $('#end').html("<p id='loser'>You lose!</p>");
+                    }
+                }
+            })
+
+            socket.on('broadcast_score', function (data) {
+                that.updateScore(data.id, data.score);
+            })           
+        }
+
+        this.detectCollision = function() {
+            var block = game.info.tile * game.info.conv;
+            this.info.collision = false;
+            // Only checks for collision when Pacman is in center of block (no overlap)
+            if (this.info.y % block === 0 && this.info.x % block === 0) {
+                var x = this.info.x / block;
+                var y = this.info.y / block;
+                var left = game.map[y-1][Math.floor(x - 0.1)];
+                var up = game.map[Math.floor(y - 0.1)-1][x];
+                var right = game.map[y-1][Math.ceil(x + 0.1)];
+                var down = game.map[Math.ceil(y + 0.1)-1][x];
+                var options = [left, up, right, down];
+                // This means user is trying to change directions
+                if (this.info.pos !== this.info.pos_temp) {
+                    // If next block is a path, it will change Pacman's position accordingly
+                    if (options[this.info.pos_temp - 37] === 1 || options[this.info.pos_temp - 37] === 9) {
+                        this.info.pos = this.info.pos_temp;
+                    }
+                }
+                // Checks if next block is a wall or a tunnel
+                if (options[this.info.pos - 37] === 0 || options[this.info.pos - 37] === 2) {
+                    this.info.collision = true;
+                }
+                else if (options[this.info.pos - 37] === undefined) {
+                    this.info.collision = undefined;
+                }
+            }
+        }
+
+        this.move = function() {
+            var block = game.info.tile * game.info.conv;
+            var sign = [-1, -1, 1, 1];
+            // Checks if next block is a tunnel
+            if (this.info.collision === undefined) {
+                if (this.info.pos === 37) {
+                    this.info.x = game.map[0].length * block - block;
+                }
+                else if (this.info.pos === 39) {
+                    this.info.x = 0;
+                }
+            }
+            // Only moves Pacman if next block is a path
+            else if (this.info.collision === false){
+                if (this.info.pos === 37 || this.info.pos === 39) {
+                    this.info.x += sign[this.info.pos - 37] * game.info.tile;
+                }
+                else if (this.info.pos === 38 || this.info.pos === 40) {
+                    this.info.y += sign[this.info.pos - 37] * game.info.tile;
+                }
+            }
+        }
+
+        this.updateCoins = function() {
+            // Used X-Y coordinates to create custom ID for each coin that links with X-Y position of Pacman.
+            // This allows you to see if Pacman ate a coin without looping through the entire coin array.
+            var coin_id;
+            var el;
+            coin_id = (this.info.y).toString() + '-' + (this.info.x).toString();
+            if (document.getElementById(coin_id)) {
+                el = document.getElementById(coin_id);
+                if (coin_id == '300-210' || coin_id == '300-360' || coin_id == '300-630' || coin_id == '300-690' || coin_id == '300-840') {
+                    sound.power.play();
+                    this.info.score += 100;
+                }
+                else {
+                    sound.eat.play();
+                    this.info.score += 10;
+                }
+                document.getElementById('coins').removeChild(el);
+                that.updateScore(this.info.id, this.info.score);
+
+                socket.emit('eat_coin', { coin_id: coin_id });
+                socket.emit('update_score', { id: this.info.id, score: this.info.score });
+            }
+        }
+
+        this.initialize();
+    }
+
+    function getDistance (x1, x2, y1, y2) {
+        return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    }
+</script>

@@ -1,0 +1,270 @@
+@font-face {
+    font-family: 'PixelSplitter';
+    src: url('PixelSplitter-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'HighlandGothicFLF';
+    src: url('HighlandGothicFLF-Bold.ttf');
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: PixelSplitter, verdana;
+}
+
+body {
+    background-color: black;
+}
+
+#wrapper {
+    height: auto;
+    width: 570px;
+}
+
+#title {
+    height: 120px;
+    width: 500px;
+    background-image: url('./../images/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 150px auto;
+    margin-bottom: 50px;
+}
+
+#content {
+    font-size: 30px;
+    color: white;
+    margin-left: 150px;
+}
+
+.select {
+    height: 30px;
+    width: 30px;
+    background-image: url('./../images/arrow.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+}
+
+.no-select {
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+}
+
+.jerco {
+    font-family: HighlandGothicFLF;
+    color: red;
+    font-size: 50px;
+    margin-left: 40px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+#container {
+    height: auto;
+    width: 570px;
+}
+
+#info {
+    position: relative;
+    height: 30px;
+    width: 570px;
+    color: white;
+}
+
+#start {
+    position: absolute;
+    top: 100px;
+    left: 0px;
+    width: 570px;
+    text-align: center;
+}
+
+#ready {
+    position: absolute;
+    top: 390px;
+    left: 0px;
+    width: 570px;
+    color: yellow;
+    font-size: 25px;
+    text-align: center;
+}
+
+#winner {
+    position: absolute;
+    width: 400px;
+    top: 150px;
+    left: 85px;
+    font-size: 50px;
+    color: green;
+    text-align: center;
+}
+
+#loser {
+    position: absolute;
+    width: 400px;
+    top: 150px;
+    left: 85px;
+    font-size: 50px;
+    color: red;
+    text-align: center;
+}
+
+#controls {
+    position: absolute;
+    height: 100px;
+    width: 570px;
+    top: 690px;
+    left: 0px;
+}
+
+#instructions {
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+#up {
+    position: relative;
+    height: 60px;
+    width: 170px;
+    top: 0px;
+    background-color: gray;
+    border: 1px solid white;
+    margin: 0px auto;
+    border-radius: 5px;
+}
+
+#left {
+    position: absolute;
+    height: 60px;
+    width: 170px;
+    top: 60px;
+    left: 10px;
+    background-color: orange;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+#right {
+    position: absolute;
+    height: 60px;
+    width: 170px;
+    top: 60px;
+    right: 10px;
+    background-color: orange;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+#down {
+    position: relative;
+    height: 60px;
+    width: 170px;
+    top: 20px;
+    background-color: gray;
+    border: 1px solid white;
+    margin: 0px auto;
+    border-radius: 5px;
+}
+
+.icon {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+h1 {
+    display: inline-block;
+    vertical-align: top;
+    width: 250px;
+    font-size: 25px;
+}
+
+h2 {
+    display: inline-block;
+    vertical-align: top;
+    width: 310px;
+    font-size: 25px;
+}
+
+h2.score {
+    text-align: right;
+}
+
+.yellow {
+    color: yellow;
+}
+
+.start {
+    background-color: yellow;
+    height: 80px;
+    width: 200px;
+    border: 3px solid black;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: black
+}
+
+.brick {
+    position: relative;
+    float: left;
+    background-color: blue;
+    height: 26px;
+    width: 26px;
+    margin: 1px;
+    border: 1px solid yellow;
+    border-radius: 5px;
+}
+
+.door {
+    position: relative;
+    float: left;
+    background-color: #FF99CC;
+    height: 26px;
+    width: 26px;
+    margin: 1px;
+    border: 1px solid yellow;
+    border-radius: 5px;
+}
+
+.path {
+    position: relative;
+    float: left;
+    background-color: black;
+    height: 30px;
+    width: 30px;
+}
+
+.pacman {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+}
+
+.ghost {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+}
+
+.coin {
+    position: absolute;
+    height: 8px;
+    width: 8px;
+}
+
+.power {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+}

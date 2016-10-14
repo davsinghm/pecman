@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta name="viewport" content="width=570, user-scalable=no">
+		<meta charset='utf-8'>
+		<title>Pac Man Lite</title>
+		<script src="jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	</head>
+	<body  background="layer3.png">
+		<div id='wrapper'>
+			<div id='title'></div>
+			<div id='content'>
+				<p class='jerco'>Pacman</p>
+				<br>
+				<p><h1 id='arrow1' class='select'></h1><a href='/classic'>1 Player</a></p>
+				<p><h1 id='arrow2' class='no-select'></h1><a href='/survivor'>2 Players</a></p>
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	document.onkeydown = function (e) {
+		if (e.keyCode === 38) {
+			document.getElementById('arrow1').className='select';
+			document.getElementById('arrow2').className='no-select';
+		}
+		else if (e.keyCode === 40) {
+			document.getElementById('arrow1').className='no-select';
+			document.getElementById('arrow2').className='select';
+		}
+		// Pressing Enter Button
+		if (e.keyCode === 13) {
+			var el = document.getElementById('arrow1');
+			var el2 = document.getElementById('arrow2');
+			if (el.className === 'select') {
+				window.location.href = '/classic';
+			}
+			else if (el2.className === 'select') {
+				window.location.href = '/survivor';
+			}
+		}
+	}
+</script>

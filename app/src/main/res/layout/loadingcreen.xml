@@ -1,0 +1,33 @@
+<RelativeLayout
+    android:layout_width = "wrap_content"
+    android:layout_height = "wrap_content"
+    android:id="@+id/layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background = "@color/background_2"
+    android:fitsSystemWindows="true"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_centerVertical = "true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/imageView" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finding opponent..."
+            android:layout_below="@id/imageView"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>
+
+<!-- #871F78 -->
